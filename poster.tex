@@ -142,77 +142,81 @@
 \headerbox{lightsheet microscopy}{name=lightsheet, span=3, column=0, row=0}{
 
   \begin{minipage}[t]{\textwidth}
-   
-    Consider the problem of localising $k$ non-negative point sources on the
-    interval $[0,1]$, namely finding their 
-    locations $ t_1, \ldots, t_k $ and magnitudes $ a_1, \ldots, a_k \geq 0$
-    from $m$ noisy samples $ y_1, \ldots, y_m $ which 
-    consist of the convolution of the input signal with a 
-    known kernel $\phi$ (e.g. Gaussian $\phi(t) = e^{-t^2/\sigma^2}$) and 
-    additive noise $\mathbf{w}$ bounded by $\delta$. 
+    TODO: a few words about why lightsheet is good
+
+    Light sheet microscopy is a type of fluorescence microscopy used in cell biology due to its fast acquisition times and low photo-damage to the sample. This is achieved by selectively illuminating a slice of the sample using a sheet of light and detecting the emitted fluorescence signal using a dedicated objective orthogonal to the plane of the sheet. 
+
+    %Consequently, the effective point spread function (PSF) of the microscope is space varying, which adds an additional layer of complexity to the problem of deconvolution of such images.
+     \begin{itemize} 
+      \item
+        Project aim: computationally improve the 
+        quality of light sheet microscopy images.
+    \end{itemize}
+
   \end{minipage}
   \vspace{1pt}
     
   \begin{minipage}[t]{\textwidth}
-  %\begin{tcbitemize}[raster columns=2, raster equal height]
-    %\tcbitem[title={Input signal}]
-    \begin{minipage}[t]{0.49\textwidth}
-      %\subsection*{\textsc{Input signal}}
+    \begin{minipage}[t]{0.48\textwidth}
       \begin{center}
         \larger
-        {\color{blue}\textbf{\textsc{Input signal}}}\\
-        \textit{$x$ is the discrete measure\\
-        we want to reconstruct.}
+        {\color{blue}\textbf{\textsc{Light-sheet microscope}}}\\
+        %\textit{$x$ is the discrete measure\\
+        %we want to reconstruct.}
       \end{center}
           
       \begin{minipage}[t]{\textwidth}
         \centering
-        \includegraphics[height=0.045\textheight]{img/sig.eps}
-        
+        \includegraphics[width=\textwidth]{img/spim.png}
+       
+        \mycaption{Figure credit: J\"{o}rg Ritter, PhD thesis (2011)}
         %\mycaption{The input signal is a sum of Diracs \\ represented 
          % as a discrete measure.}
       \end{minipage}
      
-      \vspace{-0.5em}
-      \begin{center}
-        \tcbhighmath[colback=blue!10!white, frame hidden]{
-          x(t) = \sum_{i=1}^{k} a_i \cdot \delta_{t_i},
-          %\quad a_i > 0
-        }
-      \end{center}
+      %\vspace{-0.5em}
+      %\begin{center}
+      %  \tcbhighmath[colback=blue!10!white, frame hidden]{
+      %    x(t) = \sum_{i=1}^{k} a_i \cdot \delta_{t_i},
+      %    %\quad a_i > 0
+      %  }
+      %\end{center}
 
       \hspace{1em}
-      { \smaller 
-        $t_i$ and $a_i$ ($i=1,\ldots,k$) are the locations\\
-        and magnitudes of the point sources.}
+      %{ \smaller 
+      %  $t_i$ and $a_i$ ($i=1,\ldots,k$) are the locations\\
+      %  and magnitudes of the point sources.}
+      
+      A light-sheet microscope consists of two objectives: TODO etc
     
     \end{minipage}
     %
-    \begin{minipage}[t]{0.49\textwidth}
+    \begin{minipage}[t]{0.48\textwidth}
       \begin{center}
         \larger
-        {\color{red}\textbf{\textsc{Measured signal}}}\\
-        \textit{$y_i$ are the samples\\
-          we use to reconstruct $x$.}
+        {\color{blue}\textbf{\textsc{Spatially varying PSF}}}\\
+        %\textit{$y_i$ are the samples\\
+        %  we use to reconstruct $x$.}
       \end{center}
       
       \begin{minipage}[t]{\textwidth}
         \centering
-        \includegraphics[height=0.046\textheight]{img/measured_sig.eps}
+        \includegraphics[width=\textwidth]{img/psf_4.png}
 
         %\mycaption{The measured signal is the convolution of the \\ input signal
         %  with a window function $\psi$.}
       \end{minipage}
 
       \begin{center}
-        \tcbhighmath[colback=red!10!white, frame hidden]{
-          y_j = \int_{[0,1]} \phi(t-s_j) x(\dif t) + w_j, 
-          %\quad \|w\|_2 \le \delta
-        }
+        \larger
+        {\color{red}\textbf{\textsc{Problem}}}\\
       \end{center}
-      {\smaller where $s_j$ ($j=1,\ldots,m$) are sampling locations
-      and $\mathbf{w} = [w_1,\ldots,w_m]^T$ with $\|\mathbf{w}\|_2 \leq \delta$
-      is the noise.}
+      \vspace{-0.5em}
+      \begin{tcolorbox}[colback=red!10!white,colframe=red]
+        Due to the combination of light-sheet and the objective PSF, 
+        the effective PSF of the system is spatially varying, and
+        therefore standard deconvolution approaches are not applicable.
+      \end{tcolorbox}
 
     \end{minipage}
   \end{minipage}
