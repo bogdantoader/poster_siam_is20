@@ -354,14 +354,14 @@
       }
     \end{center}
 
-    \begin{minipage}[t]{0.49\textwidth}
+    \begin{minipage}[t]{0.55\textwidth}
       \begin{minipage}[t]{0.49\textwidth}
         \centering
 
         \raisebox{\dimexpr-\height+\ht\strutbox}{
-          \includegraphics[height=0.07\textheight]{img/simulated/u0}
+          \includegraphics[height=0.08\textheight]{img/simulated/u0_mod}
         }
-        \vspace{-0.3em}
+        \vspace{0.3em}
         \mycaption{
           (a) Ground truth image
         }
@@ -371,9 +371,9 @@
         \centering
 
         \raisebox{\dimexpr-\height+\ht\strutbox}{
-          \includegraphics[height=0.07\textheight]{img/simulated/f_gaussian}
+          \includegraphics[height=0.08\textheight]{img/simulated/f_gaussian_mod}
         }
-        \vspace{-0.3em}
+        \vspace{0.3em}
         \mycaption{
           (b) Data 
         }
@@ -384,7 +384,7 @@
         \centering
 
         \raisebox{\dimexpr-\height+\ht\strutbox}{
-          \includegraphics[height=0.07\textheight]{img/simulated/gauss_urec_h}
+          \includegraphics[height=0.08\textheight]{img/simulated/gauss_urec_h_mod}
         }
         \vspace{-0.3em}
         \mycaption{
@@ -396,17 +396,17 @@
         \centering
 
         \raisebox{\dimexpr-\height+\ht\strutbox}{
-          \includegraphics[height=0.07\textheight]{img/simulated/gauss_urec_l}
+          \includegraphics[height=0.08\textheight]{img/simulated/gauss_urec_l_mod}
         }
 
-        \vspace{-0.3em}
+        \vspace{0.3em}
         \mycaption{
           (d) Model deconvolution
         }
       \end{minipage}
     \end{minipage}
     %
-    \hspace{1.5em}
+    \hspace{-0.5em}
     \begin{minipage}[t]{0.45\textwidth}
       \begin{itemize}
         \item To solve the optimisation problem, we apply a version
@@ -415,7 +415,8 @@
         \item In the figure on the left, we show an example of a simulated sample (a) 
           to which we apply the forward model with Gaussian noise (b)
           and the result of deconvolving using only a spatially varying
-          PSF (c) and the full forward model (d).
+          PSF (c) and the full forward model (d). All images are shown 
+          using maximum intensity projection.
       \end{itemize}
     \end{minipage}
 }
