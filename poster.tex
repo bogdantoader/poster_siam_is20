@@ -14,6 +14,9 @@
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing}
 
+\newcommand{\PSF}{\text{PSF}}
+\newcommand{\argmin}{\text{argmin}}
+
 %%% Define a caption font
 \newcommand{\mycaption}[1]{
   {
@@ -221,232 +224,132 @@
     \end{minipage}
   \end{minipage}
 }
-\headerbox{model}{name=model, span=3, column=3, row=0}{
+\headerbox{psf model}{name=model, span=3, column=3, row=0}{
 
   \begin{minipage}[t]{\textwidth}
-    The measure $x$ can be recovered exactly by solving 
-    the TV norm minimisation problem over non-negative
-    measures $z$ on $[0,1]$:
+    TODO
+    We calculate the objective PSF $h$ by using a model 
+    that includes defocus etc etc. TODO: reference to paper 
     \begin{tcolorbox}[colback=teal!10!white,colframe=white]
       \begin{equation}
-        \min_{z \geq 0} \|z\|_{TV} 
-        \quad \text{subject to} \quad
-        y_j = \int_{[0,1]} \phi(t-s_j)x(\dif t),
-        \quad
-        \forall j=1,\ldots,m,
+        h(x,y,z) = \left|
+          \iint g_{\sigma} * p(\kappa_x,\kappa_y) e^{
+            2 i \pi z 
+            \sqrt{(n/\lambda)^2 - \kappa_x^2 - \kappa_y^2}
+          }
+          e^{
+            2 i \pi (\kappa_x x + \kappa_y y)
+          }
+          \dif \kappa_x \dif \kappa_y
+        \right|^2
+        \label{eq:psf model}
       \end{equation}
     \end{tcolorbox}
-    or its dual:
+    with the pupil function $p$ defined 
     \begin{tcolorbox}[colback=teal!10!white,colframe=white]
       \begin{equation}
-        \max_{\lambda \in \mathbb{R}^m}
-        y^T \lambda 
-        \quad \text{subject to} \quad
-        \sum_{j=1}^m \lambda_j \phi(t-s_j) \leq 1,
-        \quad \forall t \in [0,1].
-        \label{eq:dual}
+        p(\kappa_x,\kappa_y) = \begin{cases}
+          e^{2i\pi \sum_{j=1}^{15} c_i Z_j(\kappa_x,\kappa_y)}
+          \quad
+            &\text{for} \quad
+            \rho = \sqrt{\kappa_x^2 + \kappa_y^2} \leq NA/\lambda,\\
+            0, \quad &\text{otherwise.}
+        \end{cases}
       \end{equation}
     \end{tcolorbox}
+    where the phase of the pupil function is computed by least-squares
+    fitting of the coefficients of the first $15$ Zernike polynomials
+    using an image of a bead.
   \end{minipage}
-  %\vspace{-10pt}
+
+  \vspace{10pt}
   \begin{minipage}[t]{\textwidth}
-    \begin{minipage}[h]{0.53\textwidth} 
-      Having the solution $\lambda$ to the dual problem \eqref{eq:dual},
-      the locations $\{t_i\}_{i=1}^k$ in the input signal
-      are given by the global maximisers of the dual certificate:
-      \vspace{-0.5em}
-      \begin{center}
-        \tcbhighmath[colback=red!10!white, frame hidden]{
-          q(t) = \sum_{j=1}^m \lambda_j \phi(t-s_j).
-        }
-      \end{center}
+    \begin{minipage}[t]{0.38\textwidth}
+      The parameters of the model are given by
+      the experimental setup used to acquire the image:
+      \begin{itemize}
+        \item $n$ - refractive index
+        \item $\lambda$ - wave length
+        \item NA - numerical aperture
+        \item $g_{\sigma}$ Gaussian blur to take into account
+          other properties not accounted for in our model
+      \end{itemize}
     \end{minipage}
     %
-    \begin{minipage}[h]{0.44\textwidth}
+    \begin{minipage}[t]{0.3\textwidth}
       \centering
-      \includegraphics[height=0.097\textheight]{img/dual_certif.eps}
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[height=0.1\textheight]{img/psf_bead.png}
+      }
+
+      \vspace{0.3em}
+      \mycaption{
+        Bead image (MIP)
+      }
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.3\textwidth}
+      \centering
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[height=0.1\textheight]{img/psf_zernike_sigma.png}
+      }
+
+      \vspace{0.3em}
+      \mycaption{
+        Estimated objective PSF (MIP)
+      }
     \end{minipage}
   \end{minipage} 
 }
 
-\headerbox{Fitting the PSF}{name=psf, span=3, column=0, below=lightsheet}{
+\headerbox{image formation model}{name=psf, span=3, column=0, below=lightsheet}{
   \begin{minipage}[t]{\textwidth} 
     \begin{center}
       \larger
-      \textbf{\textsc{Algorithm}}
+      \textbf{\textsc{Forward model}}
     \end{center}
 
-    We solve 
-    %\begin{center}
-      \tcbhighmath[colback=teal!10!white, frame hidden]{
-        \min_{\lambda \in \mathbb{R}^m} f(\lambda)
-      }
-    %\end{center}
-    %where $f(\lambda)$ is the exact penalty formulation
-    %of the dual:
-    for the exact penalty $f$:
+    The sample $s$ illuminated at $z=z_0$ by the light-sheet $l$
+    and the photons are collected by an objective with PSF $h$:
     \begin{center}
       \tcbhighmath[colback=red!10!white, frame hidden]{
-        f(\lambda) = 
-        -y^T \lambda
-        + \Pi \cdot
-        \max\{
-          \sup_{s} \sum_{j=1}^m
-            \lambda_j \phi(s-s_j) - 1,
-          0
-        \}
+        f(x,y,z_0) = \iiint l_{avg_y}(u,v,w) s(u,v,w - z_0) h(x-u,y-v,w) \dif u \dif v \dif w
+        \label{eq:lightsheet model}
       }
     \end{center}
-    in the set 
-    $ Q = \{ \lambda \in \mathbb{R}^m ~|~ 
-        \|\lambda\|_{\infty} \leq B \} $.
-    %\begin{minipage}[t]{\textwidth}
-    As described in \cite{NesterovOpt}, at every iteration $p$:
-      \begin{enumerate}
-        \item Compute the piece-wise linear model:  
-          \begin{equation*}
-            \hat{f}_p(\lambda) = \max_{0\leq l \leq p} \left[
-              f(\lambda_l) + \left< g(\lambda_l), \lambda-\lambda_l \right>
-            \right],
-          \end{equation*}
-          where $g(\lambda_l)$ are some subgradients of $f$ at $\lambda_l$.
+    where $h$ is given in \eqref{eq:psf model} 
+    and $l$ is calculated similarly (TODO explain)
 
-       \item Find the optimal value $\hat{f}_p^*$ of the current 
-         model $\hat{f}_p$ and
-          the smallest value $f_p^*$ of the objective $f$ so far.
-          %Note that $\hat{f}_p^* \leq f_p^*$.
+    TODO: insert diagram of the image formation to explain the forward model
 
-        \item Calculate the next iterate $\lambda_{p+1}$ as the projection
-          of $\lambda_p$ on the level set 
-          $
-            \mathcal{L}_p(\alpha) = \{\lambda \in Q ~|~ 
-              \hat{f}_p(\lambda) \leq \ell_p(\alpha)\}
-          $
-          where 
-          $
-            \ell_p(\alpha) = (1-\alpha)\hat{f}_p^* + \alpha f_p^*
-          $
-          for some $\alpha \in (0,1)$.
-      \end{enumerate}
-    %\end{minipage}
+    \begin{center}
+      \larger
+      \textbf{\textsc{Reconstruction}}
+    \end{center}
+
+    TODO: refine this text, also make it take into account that
+    we don't always use L2 for fidelity or TV for regularization.
+    Let $\hat{f}$ be the image data and
+    $f(s)$ the result of applying the forward
+    model to the sample $s$.
+
+    To recover $s$, we solve:
+    \begin{center}
+      \tcbhighmath[colback=red!10!white, frame hidden]{
+        \text{Find }
+        \hat{s} \in 
+        \argmin_{s} \left\{
+          \| \hat{f} - f(s)   \|_{L_2}
+          + \lambda TV(s)  
+        \right\}
+      }
+    \end{center}
+    using a version of the Primal Dual Hybrid Gradient (PDHG) 
+    algorithm. TODO: reference.
   \end{minipage}
-  %
-%  \hspace{0.7em}
-%  \begin{minipage}[t]{0.66\textwidth}
-%    \begin{minipage}[t]{0.33\textwidth}
-%      \begin{center}
-%        \larger
-%        \textbf{\textsc{Theorem 1}}
-%      \end{center}
-%      \vspace{-0.7em}
-%     
-%      \begin{tcolorbox}[colback=teal!10!white,colframe=cambridge_blue]
-%        Perturbations $\tilde{t_i}$ of the source 
-%        locations $t_i^*$ are bounded explicitly as a function 
-%        of the perturbations in the dual variable $\lambda$ around the 
-%        solution $\lambda^*$:
-%
-%        \begin{equation*}
-%          \frac{|\tilde{t}_i-t^*_i|}{\|\tilde{\lambda}-\lambda^*\|_2} 
-%          \leq C_{t^*}
-%        \end{equation*}
-%      \end{tcolorbox}
-%   
-%      \begin{minipage}[t]{\textwidth}
-%        \centering
-%
-%        \includegraphics[height=0.10\textheight]{img/t_lam.eps}
-%        %\vspace{-1.5em}
-%        %\mycaption{(a)}
-%      \end{minipage}
-%
-%    \end{minipage}
-%    \begin{minipage}[t]{0.33\textwidth}
-%      \begin{center}
-%        \larger
-%        \textbf{\textsc{Theorem 2}}
-%      \end{center}
-%      \vspace{-0.7em}
-%     
-%      \begin{tcolorbox}[colback=teal!10!white,colframe=cambridge_blue]
-%        Perturbations $\mathbf{\tilde{a}}$ of the source 
-%        weights $\mathbf{a^*}$ are bounded explicitly as a function
-%        of the perturbations $\mathbf{\tilde{t}}$ in the 
-%        true source locations $\mathbf{t^*}$:
-%       
-%        \vspace{0.5em}
-%        \begin{equation*} 
-%          \frac{\|\mathbf{\tilde{a}}-\mathbf{a^*}\|_2}{
-%            \|\mathbf{\tilde{t}}-\mathbf{t^*}\|_2
-%          } 
-%          \leq C_{a^*} 
-%          + \mathcal{O}(\|\mathbf{\tilde{t}}-\mathbf{t^*}\|_2)
-%        \end{equation*}
-%      \end{tcolorbox}
-%
-%      \begin{minipage}[t]{\textwidth}
-%        \centering
-%
-%        \includegraphics[height=0.10\textheight]{img/a_t.eps}
-%        %\vspace{-1.5em}
-%        %\mycaption{(b)}
-%      \end{minipage}
-%    
-%    \end{minipage}
-%    \begin{minipage}[t]{0.33\textwidth}
-%      \begin{center}
-%        \larger
-%        \textbf{\textsc{Theorem 3}}
-%      \end{center}
-%      \vspace{-0.7em}
-%     
-%      \begin{tcolorbox}[colback=teal!10!white,colframe=cambridge_blue]
-%        Perturbations of the dual variable $\lambda$ around 
-%        the solution $\lambda^*$ of the dual problem are
-%        bounded explicitly as a function of the 
-%        additive noise $\mathbf{w}$ in the measurements:
-%        
-%        \vspace{0.2em}
-%        \begin{equation*}
-%          \frac{\|\tilde{\lambda}-\lambda^*\|_2}{
-%            \|\mathbf{w}\|_2
-%          }
-%          \leq C_{\lambda^*}
-%        \end{equation*}
-%      \end{tcolorbox}
-%    
-%      \begin{minipage}[t]{\textwidth}
-%        \centering
-%
-%        \includegraphics[height=0.10\textheight]{img/lam_w}
-%        %\vspace{-1.5em}
-%        %\mycaption{(c)}
-%      \end{minipage}
-%    \end{minipage}
-%    \vspace{-0.9em}
-%    \begin{center} 
-%      \mycaption{ 
-%        The error ratios from the theorems above 
-%        when applying the level method to the dual problem
-%        for source\\ 
-%        locations $t_i \in \{0.25, 0.63, 0.888\}$,
-%        weights $a_i \in \{0.8,0.5,0.9\}$,
-%        $m=21$ equispaced samples in $[0,1]$ and\\
-%        Gaussian kernel $\phi(t) = e^{-t^2/\sigma^2}$
-%        with $\sigma = 0.07$.
-%        Left: $t_2$,$\lambda$,
-%        middle: $a$,$t$,
-%        right: $\lambda$,$w$.\\
-%        The exact conditions in which the results above hold, 
-%        together with the explicit expressions for the\\
-%        constants $C_{t^*}$, $C_{a^*}$ and $C_{\lambda^*}$
-%        respectively are given in \cite{chretien2019dual}.
-%      }
-%    \end{center}
-%  \end{minipage}
 }
 
-\headerbox{Results -- simulated data}{name=resultssim, span=3, column=3, below=model}{
+\headerbox{Results -- simulated data}{name=resultssim, span=3, column=3, below=lightsheet}{
 
 
 
@@ -460,59 +363,91 @@
       \textbf{\textsc{Beads}}
     \end{center}
 
-    \vspace{-1em}
-    \begin{minipage}[h]{0.5\textwidth}
-      \begin{itemize}
-        \item \textbf{Exact measurements:} 
-          the level method finds the correct
-          locations of the point sources with high
-          accuracy -- see the localisation error
-          for two sources as the distance between them
-          goes to zero in the bottom left figure. 
-        \item \textbf{Noisy measurements:}
-          As the distance between two sources
-          decreases, they are replaced with one source
-          with higher intensity in the reconstructed
-          signal.
-      \end{itemize}
-    \end{minipage}
-    %
-    \begin{minipage}[h]{0.49\textwidth}
-      \centering
-      \includegraphics[height=0.1\textheight]{img/1d_base.eps}
-      %\vspace{-0.5em}
-      
-      \mycaption{Example of setup with noise-free\\ 
-        measurements, solved to accuracy $10^{-6}$.}
-    \end{minipage}
- 
-    \vspace{0.5em}
-    \begin{minipage}[h]{0.97\textwidth}
-      \begin{minipage}[h]{0.5\textwidth}
-        \centering
-        \includegraphics[height=0.12\textheight]{img/1d_error_noisefree.eps}
-        %\vspace{-0.5em}
-      \end{minipage}
-      %
-      \begin{minipage}[h]{0.5\textwidth}
-        \centering
-        \includegraphics[height=0.12\textheight]{img/1d_error_noisy.eps}
-        %\vspace{-0.5em}
-      \end{minipage}
+    Full resolution image: 1127 x 111 x 100
 
-      \vspace{-1em}
-      \begin{center}
-        \mycaption{Localisation error for two point sources
-          as the distance $\Delta$ between them increases 
-          from $0.004$ to $0.2$ in the noise-free case (left)
-          and noisy case for Gaussian noise with standard deviation
-          $0.01$, $0.02$, $0.05$, $0.1$, $0.2$ (right).
-          The convolution kernel
-          is Gaussian with $\sigma=0.05$, intensities are $1$ 
-          and $m=21$ equispaced samples.
-        }
-        \end{center}
+    \begin{minipage}[t]{\textwidth}
+      \centering
+      \includegraphics[width=0.5\textwidth]{img/fBeads_xy1.png}
+      \includegraphics[width=0.5\textwidth]{img/urecBeads_h_xy1.png}
+      \includegraphics[width=0.5\textwidth]{img/urecBeads_xy1.png}
     \end{minipage}
+
+    \begin{center}
+      \mycaption{
+        Data (top), constant PSF deconvolution (middle),
+        model deconvolution (bottom)
+      }
+    \end{center}
+
+    \begin{minipage}[t]{\textwidth}
+      %\hspace{0.6cm}
+      \centering
+      \includegraphics[width=0.5\textwidth]{img/fBeads_xz1.png}
+      \includegraphics[width=0.5\textwidth]{img/urecBeads_h_xz1.png}
+      \includegraphics[width=0.5\textwidth]{img/urecBeads_xz1.png}
+    \end{minipage}
+
+    \begin{center}
+      \mycaption{
+        Data (top), constant PSF deconvolution (middle),
+        model deconvolution (bottom)
+      }
+    \end{center}
+
+
+%    \vspace{-1em}
+%    \begin{minipage}[h]{0.5\textwidth}
+%      \begin{itemize}
+%        \item \textbf{Exact measurements:} 
+%          the level method finds the correct
+%          locations of the point sources with high
+%          accuracy -- see the localisation error
+%          for two sources as the distance between them
+%          goes to zero in the bottom left figure. 
+%        \item \textbf{Noisy measurements:}
+%          As the distance between two sources
+%          decreases, they are replaced with one source
+%          with higher intensity in the reconstructed
+%          signal.
+%      \end{itemize}
+%    \end{minipage}
+%    %
+%    \begin{minipage}[h]{0.49\textwidth}
+%      \centering
+%      \includegraphics[height=0.1\textheight]{img/1d_base.eps}
+%      %\vspace{-0.5em}
+%      
+%      \mycaption{Example of setup with noise-free\\ 
+%        measurements, solved to accuracy $10^{-6}$.}
+%    \end{minipage}
+% 
+%    \vspace{0.5em}
+%    \begin{minipage}[h]{0.97\textwidth}
+%      \begin{minipage}[h]{0.5\textwidth}
+%        \centering
+%        \includegraphics[height=0.12\textheight]{img/1d_error_noisefree.eps}
+%        %\vspace{-0.5em}
+%      \end{minipage}
+%      %
+%      \begin{minipage}[h]{0.5\textwidth}
+%        \centering
+%        \includegraphics[height=0.12\textheight]{img/1d_error_noisy.eps}
+%        %\vspace{-0.5em}
+%      \end{minipage}
+%
+%      \vspace{-1em}
+%      \begin{center}
+%        \mycaption{Localisation error for two point sources
+%          as the distance $\Delta$ between them increases 
+%          from $0.004$ to $0.2$ in the noise-free case (left)
+%          and noisy case for Gaussian noise with standard deviation
+%          $0.01$, $0.02$, $0.05$, $0.1$, $0.2$ (right).
+%          The convolution kernel
+%          is Gaussian with $\sigma=0.05$, intensities are $1$ 
+%          and $m=21$ equispaced samples.
+%        }
+%        \end{center}
+%    \end{minipage}
   \end{minipage}
   %
   \begin{minipage}[t]{0.48\textwidth}
@@ -520,61 +455,98 @@
       \larger
       \textbf{\textsc{Marchantia}}
     \end{center}
-    
-    \begin{minipage}[h]{\textwidth}
-      Examples of $k=25$ sources in an image with $67 \times 67$ 
-      pixels (giving $m=4489$ measurements), Gaussian kernel
-      with $\sigma = 0.05$ and level method parameters
-      $\Pi = 100$ and $B = 100$.
-      Red crosses 
-        \includegraphics[height=0.007\textheight]{img/cross.png}
-       are true sources and 
-      black circles 
-        \includegraphics[height=0.007\textheight]{img/circle.png}
-       are estimated sources.
-      
-     \vspace{0.7em}
-      \begin{minipage}[t]{0.49\textwidth}
-        \centering
-        \includegraphics[height=0.1\textheight]{img/2d_noise_free_nolegend.eps}
 
-        \vspace{-0.3em}
-        \mycaption{
-          Noise-free measurements.
-        }
-      \end{minipage}
-      %
-      \begin{minipage}[t]{0.49\textwidth}
-        \centering
-        \includegraphics[height=0.1\textheight]{img/2d_noise_005_nolegend.eps}
+    TODO: include the latest results here because better
 
-        \vspace{-0.3em}
-        \mycaption{
-          Gaussian noise with standard deviation $0.05$.
-        }
-      \end{minipage}
+    Full resolution image: 1127 x 155 x 100
 
-      \vspace{0.9em}
-      \begin{minipage}[t]{0.49\textwidth}
-        \centering
-        \includegraphics[height=0.1\textheight]{img/2d_noise_01_nolegend.eps}
-
-        \vspace{-0.3em}
-        \mycaption{
-          Gaussian noise with standard deviation $0.1$.
-        }
-      \end{minipage}
-      %
-      \begin{minipage}[t]{0.49\textwidth}
-        \centering
-        \includegraphics[height=0.1\textheight]{img/2d_noise_02_nolegend.eps}
-
-        \vspace{-0.3em}
-        \mycaption{
-          Gaussian noise with standard deviation $0.2$.
-        }
-      \end{minipage}
+    \begin{minipage}[t]{\textwidth}
+      %\hspace{0.6cm}
+      \centering
+      \includegraphics[width=0.5\textwidth]{img/f_xy1.png}
+      \includegraphics[width=0.5\textwidth]{img/urec_h_xy1.png}
+      \includegraphics[width=0.5\textwidth]{img/urec_xy1.png}
     \end{minipage}
+
+    \begin{center}
+      \mycaption{
+        Data (top), constant PSF deconvolution (middle),
+        model deconvolution (bottom)
+      }
+    \end{center}
+
+    \begin{minipage}[t]{\textwidth}
+      %\hspace{0.6cm}
+      \centering
+      \includegraphics[width=0.5\textwidth]{img/f_xz1.png}
+      \includegraphics[width=0.5\textwidth]{img/urec_h_xz1.png}
+      \includegraphics[width=0.5\textwidth]{img/urec_xz1.png}
+    \end{minipage}
+
+    \begin{center}
+      \mycaption{
+        Data (top), constant PSF deconvolution (middle),
+        model deconvolution (bottom)
+      }
+    \end{center}
+
+
+
+    
+%    \begin{minipage}[h]{\textwidth}
+%      Examples of $k=25$ sources in an image with $67 \times 67$ 
+%      pixels (giving $m=4489$ measurements), Gaussian kernel
+%      with $\sigma = 0.05$ and level method parameters
+%      $\Pi = 100$ and $B = 100$.
+%      Red crosses 
+%        \includegraphics[height=0.007\textheight]{img/cross.png}
+%       are true sources and 
+%      black circles 
+%        \includegraphics[height=0.007\textheight]{img/circle.png}
+%       are estimated sources.
+%      
+%     \vspace{0.7em}
+%      \begin{minipage}[t]{0.49\textwidth}
+%        \centering
+%        \includegraphics[height=0.1\textheight]{img/2d_noise_free_nolegend.eps}
+%
+%        \vspace{-0.3em}
+%        \mycaption{
+%          Noise-free measurements.
+%        }
+%      \end{minipage}
+%      %
+%      \begin{minipage}[t]{0.49\textwidth}
+%        \centering
+%        \includegraphics[height=0.1\textheight]{img/2d_noise_005_nolegend.eps}
+%
+%        \vspace{-0.3em}
+%        \mycaption{
+%          Gaussian noise with standard deviation $0.05$.
+%        }
+%      \end{minipage}
+%
+%      \vspace{0.9em}
+%      \begin{minipage}[t]{0.49\textwidth}
+%        \centering
+%        \includegraphics[height=0.1\textheight]{img/2d_noise_01_nolegend.eps}
+%
+%        \vspace{-0.3em}
+%        \mycaption{
+%          Gaussian noise with standard deviation $0.1$.
+%        }
+%      \end{minipage}
+%      %
+%      \begin{minipage}[t]{0.49\textwidth}
+%        \centering
+%        \includegraphics[height=0.1\textheight]{img/2d_noise_02_nolegend.eps}
+%
+%        \vspace{-0.3em}
+%        \mycaption{
+%          Gaussian noise with standard deviation $0.2$.
+%        }
+%      \end{minipage}
+%    \end{minipage}
   \end{minipage}
   \vspace{-1em}
 }
