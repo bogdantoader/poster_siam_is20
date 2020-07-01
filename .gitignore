@@ -5,5 +5,6 @@
 *.fls
 *.log
 *.tex.swp
+*.tex.bak
 .DS_Store
 

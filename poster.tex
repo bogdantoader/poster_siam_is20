@@ -97,7 +97,7 @@
 {
   %%\textsc{Source Reconstruction \vspace{0.2cm}\\From Hydrophone Data}
   \textsc{Spatially Variable Deconvolution\vspace{0.2cm}\\ 
-    for Lightsheet Microscopy\vspace{0.2em}}
+    for Light-sheet Microscopy\vspace{0.2em}}
   %\vspace{0.3em}
 }
 %%% Authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,7 +107,7 @@
   {
     \underline{\textbf{Bogdan Toader}}\textsuperscript{1},
     \textbf{J\'{e}r\^{o}me Boulanger}\textsuperscript{2},
-    \textbf{Yury Jorolev}\textsuperscript{1},
+    \textbf{Yury Korolev}\textsuperscript{1},
     \textbf{Martin Lenz}\textsuperscript{1},\\
     \textbf{James Manton}\textsuperscript{2},
     \textbf{Leila Mure\c{s}an}\textsuperscript{1},
@@ -151,7 +151,7 @@
   %}
 }
 \headerbox{lightsheet microscopy}{name=lightsheet, span=3, column=0, row=0}{
-  Light sheet microscopy is a type of fluorescence 
+  Light-sheet microscopy is a type of fluorescence 
   microscopy used in cell biology due to its fast 
   acquisition times and low photo-damage to the sample. 
   This is achieved by selectively illuminating a slice 
@@ -171,7 +171,7 @@
   \begin{minipage}[t]{0.48\textwidth}
     \begin{center}
       \larger
-      {\color{blue}\textbf{\textsc{Spatially varying PSF}}}\\
+      {\color{blue}\textbf{\textsc{spatially varying psf}}}\\
       %\textit{$y_i$ are the samples\\
       %  we use to reconstruct $x$.}
     \end{center}
@@ -185,11 +185,11 @@
   \begin{minipage}[t]{0.48\textwidth}
     \begin{center}
       \larger
-      {\color{red}\textbf{\textsc{Problem}}}\\
+      {\color{red}\textbf{\textsc{problem}}}\\
     \end{center}
     \vspace{-1em}
     \begin{tcolorbox}[colback=red!10!white,colframe=red]
-      Due to the interaction of the lightsheet beam  
+      Due to the interaction of the light-sheet beam  
       and the detection/objective point spread function (PSF), 
       the effective PSF of the system is spatially varying, and
       therefore standard deconvolution approaches are not applicable.
@@ -201,7 +201,7 @@
     %\vspace{-1em}
     \begin{center}
       \larger
-      {\color{blue}\textbf{\textsc{Goal}}}\\
+      {\color{blue}\textbf{\textsc{goal}}}\\
     \end{center}
     \vspace{-1em}
     \begin{tcolorbox}[colback=blue!10!white,colframe=blue]
@@ -337,16 +337,17 @@
     model \eqref{eq:lightsheet model} to the sample $s$.
     To recover $s$, we solve:
     \vspace{-0.5em}
-    \begin{center}
-      \tcbhighmath[colback=red!10!white, frame hidden]{
+    \begin{tcolorbox}[colback=red!10!white,colframe=white]
+      \begin{equation}
         \text{Find }
         \hat{s} \in 
         \argmin_{s} \left\{
           \| \hat{f} - f(s)   \|_{L_2}
           + \lambda TV(s)  
         \right\}
-      }
-    \end{center}
+        \label{eq:min prob}
+      \end{equation}
+    \end{tcolorbox}
     \vspace{-0.5em}
 
     \begin{minipage}[t]{0.55\textwidth}
@@ -423,27 +424,38 @@
     \end{minipage}
 }
 
-\headerbox{Results}
+\headerbox{results}
 {name=resultsreal,column=0, below=model, span=6}{
   \begin{minipage}[t]{0.33\textwidth} 
+ 
+    \vspace{1em}
+    We solve the minimisation problem \eqref{eq:min prob}
+    with the forward model given by \eqref{eq:lightsheet model}
+    and the PSF model in \eqref{eq:psf model}
+    to two 3D image stacks: 
+    \begin{enumerate} 
+      \item Beads in agarose (1127 x 111 x 100 pixels).
 
-    Beads
+      \item Marchantia plant (1127 x 155 x 100 pixels).
+    \end{enumerate}
+
+    We compare our proposed method with deconvolution using
+    constant PSF, namely the detection PSF $h$
+    estimated in \eqref{eq:psf model}. In this case,
+    we solve the same minimisation problem \eqref{eq:min prob}, 
+    except that the forward model is only a convolution
+    operator.
+
     \begin{itemize}
-      \item We apply the proposed method to a sample of 
-        beads in agarose.
-      \item The dimensions of the sample are 1127 x 111 x 100 pixels.
+      \item In the bead images, the lobes of the beads 
+        due to spherical aberration are minimised, as seen
+        in the XY slice, while in the XZ slice we see that
+        the beads become symmetric and less elongated.
 
-      \item
-    \end{itemize}
-
-    Marchantia
-    \begin{itemize}
-      \item We apply the proposed method to a sample of 
-        Marchantia plant.
-      \item The dimensions of the sample 
-        are 1127 x 155 x 100 pixels.
-
-      \item
+      \item In the Marchantia image, the contrast is 
+        enhanced, the cell walls becoming sharper 
+        using our proposed approach compared to the constant
+        PSF deconvolution.
     \end{itemize}
 
   \end{minipage}
@@ -451,7 +463,7 @@
   \begin{minipage}[t]{0.33\textwidth} 
     \begin{center}
       \larger
-      \textbf{\textsc{Beads}}
+      \textbf{\textsc{1. beads}}
     \end{center}
 
     \vspace{-0.5em}
@@ -503,7 +515,7 @@
   \begin{minipage}[t]{0.33\textwidth}
     \begin{center}
       \larger
-      \textbf{\textsc{Marchantia}}
+      \textbf{\textsc{2. marchantia}}
     \end{center}
 
     %\hspace{0.6cm}
