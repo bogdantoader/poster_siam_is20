@@ -6,6 +6,7 @@
 \usepackage{graphicx,subcaption}
 \usepackage[most,skins,theorems]{tcolorbox}
 \usepackage{color}
+\usepackage[none]{hyphenat} 
 
 \usepackage{relsize}
 \usepackage{natbib}
@@ -13,6 +14,9 @@
 
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing}
+
+\usepackage{natbib}
+\setlength{\bibsep}{0.0pt}
 
 \newcommand{\PSF}{\text{PSF}}
 \newcommand{\argmin}{\text{argmin}}
@@ -94,7 +98,7 @@
   %%\textsc{Source Reconstruction \vspace{0.2cm}\\From Hydrophone Data}
   \textsc{Spatially Variable Deconvolution\vspace{0.2cm}\\ 
     for Lightsheet Microscopy\vspace{0.2em}}
-  \vspace{0.3em}
+  %\vspace{0.3em}
 }
 %%% Authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {
@@ -102,14 +106,18 @@
   \hspace{-0.65em}
   {
     \underline{\textbf{Bogdan Toader}}\textsuperscript{1},
-    \textbf{TODO update St\'{e}phane Chr\'{e}tien}\textsuperscript{2}, 
-    \textbf{Andrew Thompson}\textsuperscript{3}
+    \textbf{J\'{e}r\^{o}me Boulanger}\textsuperscript{2},
+    \textbf{Yury Jorolev}\textsuperscript{1},
+    \textbf{Martin Lenz}\textsuperscript{1},\\
+    \textbf{James Manton}\textsuperscript{2},
+    \textbf{Leila Mure\c{s}an}\textsuperscript{1},
+    \textbf{Carola-Bibiane Sch\"{o}nlieb}\textsuperscript{1}
   } \\[0.2em]
   {
     \textsuperscript{1}University of Cambridge,
-    \textsuperscript{2}University of Lyon 2, 
-    \textsuperscript{3}National Physical Laboratory
+    \textsuperscript{2}MRC Laboratory of Molecular Biology 
   }
+  \vspace{-1em}
 }
 %%% InFoMM Logo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
@@ -143,95 +151,77 @@
   %}
 }
 \headerbox{lightsheet microscopy}{name=lightsheet, span=3, column=0, row=0}{
-
-  \begin{minipage}[t]{\textwidth}
-    TODO: a few words about why lightsheet is good
-
-    Light sheet microscopy is a type of fluorescence microscopy used in cell biology due to its fast acquisition times and low photo-damage to the sample. This is achieved by selectively illuminating a slice of the sample using a sheet of light and detecting the emitted fluorescence signal using a dedicated objective orthogonal to the plane of the sheet. 
-
-    %Consequently, the effective point spread function (PSF) of the microscope is space varying, which adds an additional layer of complexity to the problem of deconvolution of such images.
-     \begin{itemize} 
-      \item
-        Project aim: computationally improve the 
-        quality of light sheet microscopy images.
-    \end{itemize}
-
-  \end{minipage}
+  Light sheet microscopy is a type of fluorescence 
+  microscopy used in cell biology due to its fast 
+  acquisition times and low photo-damage to the sample. 
+  This is achieved by selectively illuminating a slice 
+  of the sample using a sheet of light and detecting the 
+  emitted fluorescence signal using a dedicated 
+  objective orthogonal to the plane of the sheet. 
   \vspace{1pt}
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \raisebox{\dimexpr-\height+\ht\strutbox}{
+      \includegraphics[width=0.8\textwidth]{img/spim.png}
+    }
+   
+    \mycaption{Figure credit: J\"{o}rg Ritter, PhD thesis (2011)}
+  \end{minipage}
+  %
+  \begin{minipage}[t]{0.48\textwidth}
+    \begin{center}
+      \larger
+      {\color{blue}\textbf{\textsc{Spatially varying PSF}}}\\
+      %\textit{$y_i$ are the samples\\
+      %  we use to reconstruct $x$.}
+    \end{center}
     
-  \begin{minipage}[t]{\textwidth}
-    \begin{minipage}[t]{0.48\textwidth}
-      %\begin{center}
-      %  \larger
-      %  {\color{blue}\textbf{\textsc{Light-sheet microscope}}}\\
-      %\end{center}
-          
-      \begin{minipage}[t]{\textwidth}
-        \centering
-        \raisebox{\dimexpr-\height+\ht\strutbox}{
-          \includegraphics[width=0.8\textwidth]{img/spim.png}
-        }
-       
-        \mycaption{Figure credit: J\"{o}rg Ritter, PhD thesis (2011)}
-        %\mycaption{The input signal is a sum of Diracs \\ represented 
-         % as a discrete measure.}
-      \end{minipage}
-     
-      %\vspace{-0.5em}
-      %\begin{center}
-      %  \tcbhighmath[colback=blue!10!white, frame hidden]{
-      %    x(t) = \sum_{i=1}^{k} a_i \cdot \delta_{t_i},
-      %    %\quad a_i > 0
-      %  }
-      %\end{center}
-
-      \hspace{1em}
-      %{ \smaller 
-      %  $t_i$ and $a_i$ ($i=1,\ldots,k$) are the locations\\
-      %  and magnitudes of the point sources.}
-      
-      A light-sheet microscope consists of two objectives: TODO etc
-    
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.48\textwidth}
-      \begin{center}
-        \larger
-        {\color{blue}\textbf{\textsc{Spatially varying PSF}}}\\
-        %\textit{$y_i$ are the samples\\
-        %  we use to reconstruct $x$.}
-      \end{center}
-      
-      \begin{minipage}[t]{\textwidth}
-        \centering
-        \includegraphics[width=0.8\textwidth]{img/psf_4.png}
-
-        %\mycaption{The measured signal is the convolution of the \\ input signal
-        %  with a window function $\psi$.}
-      \end{minipage}
-
-      \begin{center}
-        \larger
-        {\color{red}\textbf{\textsc{Problem}}}\\
-      \end{center}
-      \vspace{-0.5em}
-      \begin{tcolorbox}[colback=red!10!white,colframe=red]
-        Due to the combination of light-sheet beam (yellow) 
-        and the objective PSF (red), 
-        the effective PSF of the system is spatially varying, and
-        therefore standard deconvolution approaches are not applicable.
-      \end{tcolorbox}
-
+    \begin{minipage}[t]{\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{img/psf_vary.pdf}
     \end{minipage}
   \end{minipage}
+     
+  \begin{minipage}[t]{0.48\textwidth}
+    \begin{center}
+      \larger
+      {\color{red}\textbf{\textsc{Problem}}}\\
+    \end{center}
+    \vspace{-1em}
+    \begin{tcolorbox}[colback=red!10!white,colframe=red]
+      Due to the interaction of the lightsheet beam  
+      and the detection/objective point spread function (PSF), 
+      the effective PSF of the system is spatially varying, and
+      therefore standard deconvolution approaches are not applicable.
+    \end{tcolorbox}
+  \end{minipage}
+  %
+  \hspace{0.6em}
+  \begin{minipage}[t]{0.48\textwidth}
+    %\vspace{-1em}
+    \begin{center}
+      \larger
+      {\color{blue}\textbf{\textsc{Goal}}}\\
+    \end{center}
+    \vspace{-1em}
+    \begin{tcolorbox}[colback=blue!10!white,colframe=blue]
+      In this work, we propose a model for image formation 
+      that describes the interaction between the 
+      illumination PSF and the detection PSF which 
+      replicates the physics of the microscope while 
+      leading to a tractable inverse problem.
+    \end{tcolorbox}
+  \end{minipage}
+  \vspace{-1em}
 }
 \headerbox{psf model}{name=psf, span=3, column=3, row=0}{
 
   \begin{minipage}[t]{\textwidth}
-    TODO
-    We calculate the objective PSF $h$ by using a model 
-    that includes defocus etc etc. TODO: reference to paper 
+    The detection PSF $h$ is modelled as the Fourier
+    transform of the pupil function multiplied by 
+    defocus~\cite{Stokseth1969}: 
     \begin{tcolorbox}[colback=teal!10!white,colframe=white]
+      \vspace{-1em}
       \begin{equation}
         h(x,y,z) = \left|
           \iint g_{\sigma} * p(\kappa_x,\kappa_y) e^{
@@ -246,7 +236,7 @@
         \label{eq:psf model}
       \end{equation}
     \end{tcolorbox}
-    with the pupil function $p$ defined 
+    where $p$ is the pupil function, defined as
     \begin{tcolorbox}[colback=teal!10!white,colframe=white]
       \begin{equation}
         p(\kappa_x,\kappa_y) = \begin{cases}
@@ -297,7 +287,7 @@
 
       \vspace{0.3em}
       \mycaption{
-        Estimated objective PSF (MIP)
+        Estimated detection PSF (MIP)
       }
     \end{minipage}
   \end{minipage} 
@@ -316,13 +306,15 @@
         \includegraphics[height=0.094\textheight]{img/model_diags.png}
       }
     \end{minipage}
-    \begin{center}
-      \tcbhighmath[colback=teal!10!white, frame hidden]{
+
+    \begin{tcolorbox}[colback=teal!10!white,colframe=white]
+      \vspace{-1em}
+      \begin{equation}
         f(x,y,z_0) = \iiint l_{avg_y}(u,v,w) s(u,v,w - z_0) h(x-u,y-v,w) \dif u \dif v \dif w
         \label{eq:lightsheet model}
-      }
-    \end{center}
-    where $h$ is the objective PSF, calculated using \eqref{eq:psf model} 
+      \end{equation}
+    \end{tcolorbox}
+    where $h$ is the detection PSF, calculated using \eqref{eq:psf model} 
     and $l_{avg_y}$ is the light-sheet, calculated by averaging the beam
     PSF obtained in a similar way to $h$, without Zernike polynomials.
 
@@ -338,10 +330,9 @@
 }
 
 \headerbox{reconstruction}{name=resultssim, span=3, column=3, below=lightsheet}{
-
-    Let $\hat{f}$ be the image data and
-    $f(s)$ the result of applying the forward
-    model to the sample $s$.
+    Let $\hat{f}$ be the image data with Gaussian noise
+    and $f(s)$ the result of applying the forward
+    model \eqref{eq:lightsheet model} to the sample $s$.
     To recover $s$, we solve:
     \begin{center}
       \tcbhighmath[colback=red!10!white, frame hidden]{
@@ -409,13 +400,20 @@
     \hspace{-0.5em}
     \begin{minipage}[t]{0.45\textwidth}
       \begin{itemize}
+        \item We use the total variation regulariser $TV(s)$
+          and $\ell_2$ fidelity term due to the Gaussian
+          noise in the data. 
+
         \item To solve the optimisation problem, we apply a version
-          of the Primal Dual Hybrid Gradient (PDHG) algorithm TODO:reference
+          of the Primal Dual Hybrid Gradient (PDHG) 
+          algorithm from \cite{Boulanger2018,Condat2013}.
 
         \item In the figure on the left, we show an example of a simulated sample (a) 
           to which we apply the forward model with Gaussian noise (b)
           and the result of deconvolving using only a spatially varying
-          PSF (c) and the full forward model (d). All images are shown 
+          PSF (c) and the full forward model (d). 
+
+        \item The images are shown 
           using maximum intensity projection.
       \end{itemize}
     \end{minipage}
@@ -524,7 +522,7 @@
         }
       \end{center}
 
-      \vspace{-0.5em}
+      \vspace{-0.8em}
       \centering
       \raisebox{\dimexpr-\height+\ht\strutbox}{
         \includegraphics[width=\textwidth]{img/f_xz1.png}
@@ -549,7 +547,7 @@
 }
 
 \headerbox{References}
-{name=references, column=0,  below=resultsreal, span=3}
+{name=references, column=0,  below=resultsreal, span=4}
 %{name=references, column=0,  above=bottom, span=1}
 {
   %\smaller                                  % Make the whole text smaller
@@ -557,12 +555,12 @@
   %\scriptsize
   \tiny
   \bibliographystyle{abbrv}                 % Use plain style
-  \renewcommand{\section}[2]{\vspace{0.05em}}	% Omit "References" title
+  \renewcommand{\section}[2]{\vspace{0.01em}}	% Omit "References" title
   \bibliography{references}
 }
 
 \headerbox{Acknowledgments}
-{name=acknowledgments, column=3, below=resultsreal, span=3}
+{name=acknowledgments, column=4, below=resultsreal, span=2}
 %{name=acknowledgments, column=1, above=bottom, span=1}
 {  
   \scriptsize
@@ -570,18 +568,7 @@
   This work is funded by 
   Isaac Newton Trust/Wellcome Trust ISSF/University of Cambridge 
   Joint Research Grants Scheme, RG89305.
-%  \vspace{-0.6em}
-%  \begin{center}
-%    \begin{tabular}{cccc}
-%      \includegraphics[height=0.02\textheight]{./img/epsrc_logo.eps}
-%      &
-%      \includegraphics[height=0.018\textheight]{./img/InFoMM}
-%      &
-%      \includegraphics[height=0.02\textheight]{./img/company_logo.jpg}
-%      &
-%      \includegraphics[height=0.018\textheight]{./img/turinglogo2.jpg}
-%    \end{tabular}
-%  \end{center}
+
   \par
 }
 
