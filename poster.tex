@@ -161,16 +161,16 @@
     
   \begin{minipage}[t]{\textwidth}
     \begin{minipage}[t]{0.48\textwidth}
-      \begin{center}
-        \larger
-        {\color{blue}\textbf{\textsc{Light-sheet microscope}}}\\
-        %\textit{$x$ is the discrete measure\\
-        %we want to reconstruct.}
-      \end{center}
+      %\begin{center}
+      %  \larger
+      %  {\color{blue}\textbf{\textsc{Light-sheet microscope}}}\\
+      %\end{center}
           
       \begin{minipage}[t]{\textwidth}
         \centering
-        \includegraphics[width=0.8\textwidth]{img/spim.png}
+        \raisebox{\dimexpr-\height+\ht\strutbox}{
+          \includegraphics[width=0.8\textwidth]{img/spim.png}
+        }
        
         \mycaption{Figure credit: J\"{o}rg Ritter, PhD thesis (2011)}
         %\mycaption{The input signal is a sum of Diracs \\ represented 
@@ -216,7 +216,8 @@
       \end{center}
       \vspace{-0.5em}
       \begin{tcolorbox}[colback=red!10!white,colframe=red]
-        Due to the combination of light-sheet and the objective PSF, 
+        Due to the combination of light-sheet beam (yellow) 
+        and the objective PSF (red), 
         the effective PSF of the system is spatially varying, and
         therefore standard deconvolution approaches are not applicable.
       \end{tcolorbox}
@@ -224,7 +225,7 @@
     \end{minipage}
   \end{minipage}
 }
-\headerbox{psf model}{name=model, span=3, column=3, row=0}{
+\headerbox{psf model}{name=psf, span=3, column=3, row=0}{
 
   \begin{minipage}[t]{\textwidth}
     TODO
@@ -302,23 +303,38 @@
   \end{minipage} 
 }
 
-\headerbox{image formation model}{name=psf, span=3, column=0, below=lightsheet}{
-  \begin{minipage}[t]{\textwidth} 
+\headerbox{image formation model}{name=model, span=3, column=0, below=lightsheet}{
+  %\begin{minipage}[t]{\textwidth} 
 
     The sample $s$ illuminated at $z=z_0$ by the light-sheet $l$
     and the photons are collected by an objective with PSF $h$:
+    \vspace{1em} 
+    
+    \begin{minipage}[t]{\textwidth}
+      \centering
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[height=0.094\textheight]{img/model_diags.png}
+      }
+    \end{minipage}
     \begin{center}
-      \tcbhighmath[colback=red!10!white, frame hidden]{
+      \tcbhighmath[colback=teal!10!white, frame hidden]{
         f(x,y,z_0) = \iiint l_{avg_y}(u,v,w) s(u,v,w - z_0) h(x-u,y-v,w) \dif u \dif v \dif w
         \label{eq:lightsheet model}
       }
     \end{center}
-    where $h$ is given in \eqref{eq:psf model} 
-    and $l$ is calculated similarly (TODO explain)
+    where $h$ is the objective PSF, calculated using \eqref{eq:psf model} 
+    and $l_{avg_y}$ is the light-sheet, calculated by averaging the beam
+    PSF obtained in a similar way to $h$, without Zernike polynomials.
 
-    TODO: insert diagram of the image formation to explain the forward model
+    \vspace{0.5em}
+    \begin{minipage}[t]{\textwidth}
+      \centering
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[height=0.065\textheight]{img/f_to_s.png}
+      }
+    \end{minipage}
 
-  \end{minipage}
+ % \end{minipage}
 }
 
 \headerbox{reconstruction}{name=resultssim, span=3, column=3, below=lightsheet}{
@@ -372,7 +388,7 @@
         }
         \vspace{-0.3em}
         \mycaption{
-          (c) Deconvolution using spatially constant PSF $h$ 
+          (c) Constant PSF deconvolution 
         }
       \end{minipage}
       %
@@ -385,7 +401,7 @@
 
         \vspace{-0.3em}
         \mycaption{
-          (d) Deconvolution using full forward model.
+          (d) Model deconvolution
         }
       \end{minipage}
     \end{minipage}
@@ -405,97 +421,66 @@
 }
 
 \headerbox{Results}
-{name=resultsreal,column=0, below=resultssim, span=6}{
+{name=resultsreal,column=0, below=model, span=6}{
   \begin{minipage}[t]{0.51\textwidth} 
     \begin{center}
       \larger
       \textbf{\textsc{Beads}}
     \end{center}
 
+   \hspace{-2em}
     \begin{minipage}[t]{0.49\textwidth}
+      \begin{itemize}
+        \item We apply the proposed method to a sample of 
+          beads in agarose.
+        \item The dimensions of the sample are 1127 x 111 x 100 pixels.
 
-    Full resolution image: 1127 x 111 x 100
+        \item
+      \end{itemize}
     \end{minipage}
     %
     \begin{minipage}[t]{0.49\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{img/fBeads_xy1.png}
-      \includegraphics[width=\textwidth]{img/urecBeads_h_xy1.png}
-      \includegraphics[width=\textwidth]{img/urecBeads_xy1.png}
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/fBeads_xy1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urecBeads_h_xy1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urecBeads_xy1.png}
+      }
 
+      \vspace{-1em}
       \begin{center}
         \mycaption{
-          Data (top), constant PSF deconvolution (middle),
+          XY slice: 
+          data (top), constant PSF deconvolution (middle),
           model deconvolution (bottom)
         }
       \end{center}
 
+      \vspace{-0.5em}
       \centering
-      \includegraphics[width=\textwidth]{img/fBeads_xz1.png}
-      \includegraphics[width=\textwidth]{img/urecBeads_h_xz1.png}
-      \includegraphics[width=\textwidth]{img/urecBeads_xz1.png}
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/fBeads_xz1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urecBeads_h_xz1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urecBeads_xz1.png}
+      }
 
+      \vspace{-1em}
       \begin{center}
         \mycaption{
-          Data (top), constant PSF deconvolution (middle),
+          XY slice:
+          data (top), constant PSF deconvolution (middle),
           model deconvolution (bottom)
         }
       \end{center}
     \end{minipage}
-
-%    \vspace{-1em}
-%    \begin{minipage}[h]{0.5\textwidth}
-%      \begin{itemize}
-%        \item \textbf{Exact measurements:} 
-%          the level method finds the correct
-%          locations of the point sources with high
-%          accuracy -- see the localisation error
-%          for two sources as the distance between them
-%          goes to zero in the bottom left figure. 
-%        \item \textbf{Noisy measurements:}
-%          As the distance between two sources
-%          decreases, they are replaced with one source
-%          with higher intensity in the reconstructed
-%          signal.
-%      \end{itemize}
-%    \end{minipage}
-%    %
-%    \begin{minipage}[h]{0.49\textwidth}
-%      \centering
-%      \includegraphics[height=0.1\textheight]{img/1d_base.eps}
-%      %\vspace{-0.5em}
-%      
-%      \mycaption{Example of setup with noise-free\\ 
-%        measurements, solved to accuracy $10^{-6}$.}
-%    \end{minipage}
-% 
-%    \vspace{0.5em}
-%    \begin{minipage}[h]{0.97\textwidth}
-%      \begin{minipage}[h]{0.5\textwidth}
-%        \centering
-%        \includegraphics[height=0.12\textheight]{img/1d_error_noisefree.eps}
-%        %\vspace{-0.5em}
-%      \end{minipage}
-%      %
-%      \begin{minipage}[h]{0.5\textwidth}
-%        \centering
-%        \includegraphics[height=0.12\textheight]{img/1d_error_noisy.eps}
-%        %\vspace{-0.5em}
-%      \end{minipage}
-%
-%      \vspace{-1em}
-%      \begin{center}
-%        \mycaption{Localisation error for two point sources
-%          as the distance $\Delta$ between them increases 
-%          from $0.004$ to $0.2$ in the noise-free case (left)
-%          and noisy case for Gaussian noise with standard deviation
-%          $0.01$, $0.02$, $0.05$, $0.1$, $0.2$ (right).
-%          The convolution kernel
-%          is Gaussian with $\sigma=0.05$, intensities are $1$ 
-%          and $m=21$ equispaced samples.
-%        }
-%        \end{center}
-%    \end{minipage}
   \end{minipage}
   %
   \begin{minipage}[t]{0.48\textwidth}
@@ -504,97 +489,60 @@
       \textbf{\textsc{Marchantia}}
     \end{center}
 
+    \hspace{-2em}
+    \begin{minipage}[t]{0.5\textwidth}
 
-    \begin{minipage}[t]{0.49\textwidth}
-      Full resolution image: 1127 x 155 x 100
+      \begin{itemize}
+        \item We apply the proposed method to a sample of 
+          Marchantia plant.
+        \item The dimensions of the sample 
+          are 1127 x 155 x 100 pixels.
 
+        \item
+      \end{itemize}
     \end{minipage}
     %
     \begin{minipage}[t]{0.49\textwidth}
       %\hspace{0.6cm}
       \centering
-      \includegraphics[width=\textwidth]{img/f_xy1.png}
-      \includegraphics[width=\textwidth]{img/urec_h_xy1.png}
-      \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xy1.png}
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/f_xy1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urec_h_xy1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xy1.png}
+      }
 
+      \vspace{-1em}
       \begin{center}
         \mycaption{
-          Data (top), constant PSF deconvolution (middle),
+          XY slice: data (top), constant PSF deconvolution (middle),
           model deconvolution (bottom)
         }
       \end{center}
 
-      %\hspace{0.6cm}
+      \vspace{-0.5em}
       \centering
-      \includegraphics[width=\textwidth]{img/f_xz1.png}
-      \includegraphics[width=\textwidth]{img/urec_h_xz1.png}
-      \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xz.png}
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/f_xz1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/urec_h_xz1.png}
+      }
+      \raisebox{\dimexpr-\height+\ht\strutbox}{
+        \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xz.png}
+      }
 
+      \vspace{-1em}
       \begin{center}
         \mycaption{
-          Data (top), constant PSF deconvolution (middle),
+          XZ slice: data (top), constant PSF deconvolution (middle),
           model deconvolution (bottom)
         }
       \end{center}
     \end{minipage}
-
-
-
-    
-%    \begin{minipage}[h]{\textwidth}
-%      Examples of $k=25$ sources in an image with $67 \times 67$ 
-%      pixels (giving $m=4489$ measurements), Gaussian kernel
-%      with $\sigma = 0.05$ and level method parameters
-%      $\Pi = 100$ and $B = 100$.
-%      Red crosses 
-%        \includegraphics[height=0.007\textheight]{img/cross.png}
-%       are true sources and 
-%      black circles 
-%        \includegraphics[height=0.007\textheight]{img/circle.png}
-%       are estimated sources.
-%      
-%     \vspace{0.7em}
-%      \begin{minipage}[t]{0.49\textwidth}
-%        \centering
-%        \includegraphics[height=0.1\textheight]{img/2d_noise_free_nolegend.eps}
-%
-%        \vspace{-0.3em}
-%        \mycaption{
-%          Noise-free measurements.
-%        }
-%      \end{minipage}
-%      %
-%      \begin{minipage}[t]{0.49\textwidth}
-%        \centering
-%        \includegraphics[height=0.1\textheight]{img/2d_noise_005_nolegend.eps}
-%
-%        \vspace{-0.3em}
-%        \mycaption{
-%          Gaussian noise with standard deviation $0.05$.
-%        }
-%      \end{minipage}
-%
-%      \vspace{0.9em}
-%      \begin{minipage}[t]{0.49\textwidth}
-%        \centering
-%        \includegraphics[height=0.1\textheight]{img/2d_noise_01_nolegend.eps}
-%
-%        \vspace{-0.3em}
-%        \mycaption{
-%          Gaussian noise with standard deviation $0.1$.
-%        }
-%      \end{minipage}
-%      %
-%      \begin{minipage}[t]{0.49\textwidth}
-%        \centering
-%        \includegraphics[height=0.1\textheight]{img/2d_noise_02_nolegend.eps}
-%
-%        \vspace{-0.3em}
-%        \mycaption{
-%          Gaussian noise with standard deviation $0.2$.
-%        }
-%      \end{minipage}
-%    \end{minipage}
   \end{minipage}
   \vspace{-1em}
 }
