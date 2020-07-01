@@ -304,10 +304,6 @@
 
 \headerbox{image formation model}{name=psf, span=3, column=0, below=lightsheet}{
   \begin{minipage}[t]{\textwidth} 
-    \begin{center}
-      \larger
-      \textbf{\textsc{Forward model}}
-    \end{center}
 
     The sample $s$ illuminated at $z=z_0$ by the light-sheet $l$
     and the photons are collected by an objective with PSF $h$:
@@ -325,18 +321,11 @@
   \end{minipage}
 }
 
-\headerbox{Results -- simulated data}{name=resultssim, span=3, column=3, below=lightsheet}{
-    \begin{center}
-      \larger
-      \textbf{\textsc{Reconstruction}}
-    \end{center}
+\headerbox{reconstruction}{name=resultssim, span=3, column=3, below=lightsheet}{
 
-    TODO: refine this text, also make it take into account that
-    we don't always use L2 for fidelity or TV for regularization.
     Let $\hat{f}$ be the image data and
     $f(s)$ the result of applying the forward
     model to the sample $s$.
-
     To recover $s$, we solve:
     \begin{center}
       \tcbhighmath[colback=red!10!white, frame hidden]{
@@ -348,53 +337,111 @@
         \right\}
       }
     \end{center}
-    using a version of the Primal Dual Hybrid Gradient (PDHG) 
-    algorithm. TODO: reference.
 
-    TODO: insert results. Then in the real data section, say the
-    results are obtained by solving the same optimization problem.
+    \begin{minipage}[t]{0.49\textwidth}
+      \begin{minipage}[t]{0.49\textwidth}
+        \centering
 
+        \raisebox{\dimexpr-\height+\ht\strutbox}{
+          \includegraphics[height=0.07\textheight]{img/simulated/u0}
+        }
+        \vspace{-0.3em}
+        \mycaption{
+          (a) Ground truth image
+        }
+      \end{minipage}
+      %
+      \begin{minipage}[t]{0.49\textwidth}
+        \centering
+
+        \raisebox{\dimexpr-\height+\ht\strutbox}{
+          \includegraphics[height=0.07\textheight]{img/simulated/f_gaussian}
+        }
+        \vspace{-0.3em}
+        \mycaption{
+          (b) Data 
+        }
+      \end{minipage}
+
+      %\vspace{0.9em}
+      \begin{minipage}[t]{0.49\textwidth}
+        \centering
+
+        \raisebox{\dimexpr-\height+\ht\strutbox}{
+          \includegraphics[height=0.07\textheight]{img/simulated/gauss_urec_h}
+        }
+        \vspace{-0.3em}
+        \mycaption{
+          (c) Deconvolution using spatially constant PSF $h$ 
+        }
+      \end{minipage}
+      %
+      \begin{minipage}[t]{0.49\textwidth}
+        \centering
+
+        \raisebox{\dimexpr-\height+\ht\strutbox}{
+          \includegraphics[height=0.07\textheight]{img/simulated/gauss_urec_l}
+        }
+
+        \vspace{-0.3em}
+        \mycaption{
+          (d) Deconvolution using full forward model.
+        }
+      \end{minipage}
+    \end{minipage}
+    %
+    \hspace{1.5em}
+    \begin{minipage}[t]{0.45\textwidth}
+      \begin{itemize}
+        \item To solve the optimisation problem, we apply a version
+          of the Primal Dual Hybrid Gradient (PDHG) algorithm TODO:reference
+
+        \item In the figure on the left, we show an example of a simulated sample (a) 
+          to which we apply the forward model with Gaussian noise (b)
+          and the result of deconvolving using only a spatially varying
+          PSF (c) and the full forward model (d).
+      \end{itemize}
+    \end{minipage}
 }
 
-\headerbox{Results -- real data}
-{name=resultsreal,column=0, below=psf, span=6}{
+\headerbox{Results}
+{name=resultsreal,column=0, below=resultssim, span=6}{
   \begin{minipage}[t]{0.51\textwidth} 
     \begin{center}
       \larger
       \textbf{\textsc{Beads}}
     \end{center}
 
+    \begin{minipage}[t]{0.49\textwidth}
+
     Full resolution image: 1127 x 111 x 100
-
-    \begin{minipage}[t]{\textwidth}
-      \centering
-      \includegraphics[width=0.5\textwidth]{img/fBeads_xy1.png}
-      \includegraphics[width=0.5\textwidth]{img/urecBeads_h_xy1.png}
-      \includegraphics[width=0.5\textwidth]{img/urecBeads_xy1.png}
     \end{minipage}
-
-    \begin{center}
-      \mycaption{
-        Data (top), constant PSF deconvolution (middle),
-        model deconvolution (bottom)
-      }
-    \end{center}
-
-    \begin{minipage}[t]{\textwidth}
-      %\hspace{0.6cm}
+    %
+    \begin{minipage}[t]{0.49\textwidth}
       \centering
-      \includegraphics[width=0.5\textwidth]{img/fBeads_xz1.png}
-      \includegraphics[width=0.5\textwidth]{img/urecBeads_h_xz1.png}
-      \includegraphics[width=0.5\textwidth]{img/urecBeads_xz1.png}
+      \includegraphics[width=\textwidth]{img/fBeads_xy1.png}
+      \includegraphics[width=\textwidth]{img/urecBeads_h_xy1.png}
+      \includegraphics[width=\textwidth]{img/urecBeads_xy1.png}
+
+      \begin{center}
+        \mycaption{
+          Data (top), constant PSF deconvolution (middle),
+          model deconvolution (bottom)
+        }
+      \end{center}
+
+      \centering
+      \includegraphics[width=\textwidth]{img/fBeads_xz1.png}
+      \includegraphics[width=\textwidth]{img/urecBeads_h_xz1.png}
+      \includegraphics[width=\textwidth]{img/urecBeads_xz1.png}
+
+      \begin{center}
+        \mycaption{
+          Data (top), constant PSF deconvolution (middle),
+          model deconvolution (bottom)
+        }
+      \end{center}
     \end{minipage}
-
-    \begin{center}
-      \mycaption{
-        Data (top), constant PSF deconvolution (middle),
-        model deconvolution (bottom)
-      }
-    \end{center}
-
 
 %    \vspace{-1em}
 %    \begin{minipage}[h]{0.5\textwidth}
@@ -457,39 +504,39 @@
       \textbf{\textsc{Marchantia}}
     \end{center}
 
-    TODO: include the latest results here because better
 
-    Full resolution image: 1127 x 155 x 100
+    \begin{minipage}[t]{0.49\textwidth}
+      Full resolution image: 1127 x 155 x 100
 
-    \begin{minipage}[t]{\textwidth}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.49\textwidth}
       %\hspace{0.6cm}
       \centering
-      \includegraphics[width=0.5\textwidth]{img/f_xy1.png}
-      \includegraphics[width=0.5\textwidth]{img/urec_h_xy1.png}
-      \includegraphics[width=0.5\textwidth]{img/urec_xy1.png}
-    \end{minipage}
+      \includegraphics[width=\textwidth]{img/f_xy1.png}
+      \includegraphics[width=\textwidth]{img/urec_h_xy1.png}
+      \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xy1.png}
 
-    \begin{center}
-      \mycaption{
-        Data (top), constant PSF deconvolution (middle),
-        model deconvolution (bottom)
-      }
-    \end{center}
+      \begin{center}
+        \mycaption{
+          Data (top), constant PSF deconvolution (middle),
+          model deconvolution (bottom)
+        }
+      \end{center}
 
-    \begin{minipage}[t]{\textwidth}
       %\hspace{0.6cm}
       \centering
-      \includegraphics[width=0.5\textwidth]{img/f_xz1.png}
-      \includegraphics[width=0.5\textwidth]{img/urec_h_xz1.png}
-      \includegraphics[width=0.5\textwidth]{img/urec_xz1.png}
-    \end{minipage}
+      \includegraphics[width=\textwidth]{img/f_xz1.png}
+      \includegraphics[width=\textwidth]{img/urec_h_xz1.png}
+      \includegraphics[width=\textwidth]{img/m_urec_it700_lam0p1_xz.png}
 
-    \begin{center}
-      \mycaption{
-        Data (top), constant PSF deconvolution (middle),
-        model deconvolution (bottom)
-      }
-    \end{center}
+      \begin{center}
+        \mycaption{
+          Data (top), constant PSF deconvolution (middle),
+          model deconvolution (bottom)
+        }
+      \end{center}
+    \end{minipage}
 
 
 
