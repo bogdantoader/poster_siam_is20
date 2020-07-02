@@ -150,7 +150,7 @@
   }
   %}
 }
-\headerbox{lightsheet microscopy}{name=lightsheet, span=3, column=0, row=0}{
+\headerbox{light-sheet microscopy}{name=lightsheet, span=3, column=0, row=0}{
   Light-sheet microscopy is a type of fluorescence 
   microscopy used in cell biology due to its fast 
   acquisition times and low photo-damage to the sample. 
@@ -236,11 +236,11 @@
         \label{eq:psf model}
       \end{equation}
     \end{tcolorbox}
-    where $p$ is the pupil function, defined as
+    where $p$ is the pupil function defined as
     \begin{tcolorbox}[colback=teal!10!white,colframe=white]
       \begin{equation}
         p(\kappa_x,\kappa_y) = \begin{cases}
-          e^{2i\pi \sum_{j=1}^{15} c_i Z_j(\kappa_x,\kappa_y)}
+          e^{2i\pi \sum_{j=1}^{15} c_j Z_j(\kappa_x,\kappa_y)}
           \quad
             &\text{for} \quad
             \rho = \sqrt{\kappa_x^2 + \kappa_y^2} \leq NA/\lambda,\\
@@ -248,7 +248,7 @@
         \end{cases}
       \end{equation}
     \end{tcolorbox}
-    where the phase of the pupil function is computed by least-squares
+    where the phase of the pupil function is estimated by least-squares
     fitting of the coefficients of the first $15$ Zernike polynomials
     using an image of a bead.
   \end{minipage}
@@ -262,8 +262,8 @@
         \item $n$ - refractive index
         \item $\lambda$ - wave length
         \item NA - numerical aperture
-        \item $g_{\sigma}$ Gaussian blur to take into account
-          other properties not accounted for in our model
+        \item $g_{\sigma}$ - Gaussian blur to take into account
+          other properties not considered in the model
       \end{itemize}
     \end{minipage}
     %
@@ -294,41 +294,38 @@
 }
 
 \headerbox{image formation model}{name=model, span=3, column=0, below=lightsheet}{
-  %\begin{minipage}[t]{\textwidth} 
+  \begin{minipage}[t]{\textwidth}
+    \centering
+    \raisebox{\dimexpr-\height+\ht\strutbox}{
+      \includegraphics[height=0.094\textheight]{img/model_diags.png}
+    }
+  \end{minipage}
+  \vspace{0.25em} 
 
-    The sample $s$ illuminated at $z=z_0$ by the light-sheet $l$
-    and the photons are collected by an objective with PSF $h$:
-    \vspace{0.5em} 
-    
-    \begin{minipage}[t]{\textwidth}
-      \centering
-      \raisebox{\dimexpr-\height+\ht\strutbox}{
-        \includegraphics[height=0.094\textheight]{img/model_diags.png}
-      }
-    \end{minipage}
+  The sample $s$ is illuminated at $z=z_0$ by the light-sheet $l_{avg_y}$
+  and the photons are collected by an objective with PSF $h$:
 
-    \begin{tcolorbox}[colback=teal!10!white,colframe=white]
-      \vspace{-1em}
-      \begin{equation}
-        f(x,y,z_0) = \iiint l_{avg_y}(u,v,w) s(u,v,w - z_0) h(x-u,y-v,w) \dif u \dif v \dif w
-        \label{eq:lightsheet model}
-      \end{equation}
-    \end{tcolorbox}
-    where $h$ is the detection PSF, calculated using \eqref{eq:psf model} 
-    and $l_{avg_y}$ is the light-sheet, calculated by averaging the beam
-    PSF obtained in a similar way to $h$, without Zernike polynomials.
+  \begin{tcolorbox}[colback=teal!10!white,colframe=white]
+    \vspace{-1em}
+    \begin{equation}
+      f(x,y,z_0) = \iiint l_{avg_y}(u,v,w) s(u,v,w - z_0) h(x-u,y-v,w) \dif u \dif v \dif w
+      \label{eq:lightsheet model}
+    \end{equation}
+  \end{tcolorbox}
+  where $h$ is the detection PSF, calculated using \eqref{eq:psf model} 
+  and $l_{avg_y}$ is the light-sheet, calculated by averaging the beam
+  PSF obtained in a similar way to $h$, without Zernike polynomials.
 
-    \vspace{0.5em}
-    \begin{minipage}[t]{\textwidth}
-      \centering
-      \raisebox{\dimexpr-\height+\ht\strutbox}{
-        \includegraphics[height=0.065\textheight]{img/f_to_s.png}
-      }
-    \end{minipage}
-    
-    \vspace{-0.5em}
+  \vspace{0.5em}
+  \begin{minipage}[t]{\textwidth}
+    \centering
+    \raisebox{\dimexpr-\height+\ht\strutbox}{
+      \includegraphics[height=0.065\textheight]{img/f_to_s.png}
+    }
+  \end{minipage}
+  
+  \vspace{-0.5em}
 
- % \end{minipage}
 }
 
 \headerbox{reconstruction}{name=resultssim, span=3, column=3, below=lightsheet}{
@@ -336,7 +333,7 @@
     and $f(s)$ the result of applying the forward
     model \eqref{eq:lightsheet model} to the sample $s$.
     To recover $s$, we solve:
-    \vspace{-0.5em}
+    
     \begin{tcolorbox}[colback=red!10!white,colframe=white]
       \begin{equation}
         \text{Find }
@@ -404,9 +401,10 @@
     %
     \hspace{-0.5em}
     \begin{minipage}[t]{0.45\textwidth}
+      %\vspace{0.25em}
       \begin{itemize}
-        \item We use the total variation regulariser $TV(s)$
-          and $\ell_2$ fidelity term due to the Gaussian
+        %\item We use the total variation regulariser $TV(s)$
+        \item  We use the $\ell_2$ fidelity term due to the Gaussian
           noise in the data. 
 
         \item To solve the optimisation problem, we apply a version
@@ -415,7 +413,7 @@
 
         \item In the figure on the left, we show an example of a simulated sample (a) 
           to which we apply the forward model with Gaussian noise (b)
-          and the result of deconvolving using only a spatially varying
+          and the result of deconvolving using only a spatially invariant
           PSF (c) and the full forward model (d). 
 
         \item The images are shown 
@@ -429,7 +427,7 @@
   \begin{minipage}[t]{0.33\textwidth} 
  
     \vspace{1em}
-    We solve the minimisation problem \eqref{eq:min prob}
+    We apply the minimisation problem \eqref{eq:min prob}
     with the forward model given by \eqref{eq:lightsheet model}
     and the PSF model in \eqref{eq:psf model}
     to two 3D image stacks: 
@@ -440,10 +438,10 @@
     \end{enumerate}
 
     We compare our proposed method with deconvolution using
-    constant PSF, namely the detection PSF $h$
+    spatially invariantPSF, namely the detection PSF $h$
     estimated in \eqref{eq:psf model}. In this case,
     we solve the same minimisation problem \eqref{eq:min prob}, 
-    except that the forward model is only a convolution
+    except that the forward model is a convolution
     operator.
 
     \begin{itemize}
@@ -454,8 +452,8 @@
 
       \item In the Marchantia image, the contrast is 
         enhanced, the cell walls becoming sharper 
-        using our proposed approach compared to the constant
-        PSF deconvolution.
+        using our proposed approach compared to the 
+        spatially invariant PSF deconvolution.
     \end{itemize}
 
   \end{minipage}
